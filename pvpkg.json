@@ -1,0 +1,17 @@
+{
+  "name": "unsloth",
+  "url": "registry.gitlab.com/pantacor/pv-platforms/unsloth:latest",
+  "package_url": "https://gitlab.com/pantacor/pv-platforms/unsloth",
+  "license": "Apache-2.0",
+  "description": "Unsloth LLM fine-tuning and inference engine with GPU acceleration for Pantavisor.",
+  "arch": ["arm64v8", "amd64"],
+  "src_extra": {
+    "args": {
+      "PV_GROUP": "app",
+      "PV_STATUS_GOAL": "READY",
+      "PV_RESTART_POLICY": "container",
+      "PV_DRIVERS_REQUIRED": ["nvidia"],
+      "PV_PERSISTENCE_VOLUME": "unsloth-models"
+    }
+  }
+}
