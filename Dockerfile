@@ -1,41 +1,21 @@
-# Multi-arch container for Unsloth under Pantavisor
-# Supports NVIDIA Tegra (Jetson Orin) and NVIDIA DGX (Blackwell) / CUDA
+# Pantavisor AI Box gateway for pv-unsloth: OpenAI-compatible API with a
+# minimal chat page, stdlib only (the Nano's CUDA 10.2 cannot run PyTorch
+# 2.x; the GPU is probed through the CUDA driver API).
+# Deployed as a Pantavisor app container: the device's nvidia driver
+# injection provides libcuda.so.1 (see pvpkg.json PV_DRIVERS_REQUIRED).
 
-FROM pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+FROM python:3.11-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
+ENV PORT=8000
 
 WORKDIR /app
-
-# Install system dependencies and pvcontrol client
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    pciutils \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Unsloth, FastAPI, and serving dependencies
-RUN pip install --no-cache-dir \
-    fastapi \
-    uvicorn \
-    pydantic \
-    transformers \
-    accelerate \
-    bitsandbytes \
-    triton
-
-# Install Unsloth
-RUN pip install --no-cache-dir "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" || \
-    pip install --no-cache-dir unsloth
-
 COPY server.py /app/server.py
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
 
-# Storage volume for model weights
+# Model files land here; /models is served by /v1/models.
+RUN mkdir -p /models
 VOLUME ["/models"]
 
 EXPOSE 8000
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["python3", "/app/server.py"]
