@@ -7,7 +7,7 @@
 FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
+ENV PORT=8001
 
 WORKDIR /app
 COPY server.py /app/server.py
@@ -16,6 +16,6 @@ COPY server.py /app/server.py
 RUN mkdir -p /models
 VOLUME ["/models"]
 
-EXPOSE 8000
+EXPOSE 8001
 
 ENTRYPOINT ["python3", "/app/server.py"]
